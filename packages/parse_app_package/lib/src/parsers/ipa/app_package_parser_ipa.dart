@@ -16,8 +16,15 @@ class AppPackageParserIpa extends AppPackageParser {
     Map<dynamic, dynamic>? result;
     for (final item in archive) {
       if (item.isFile && item.name.endsWith('.app/Info.plist')) {
-        final data = item.content;
-        result = PlistParser().parseBytes(data);
+        // final data = item.content;
+        // result = PlistParser().parseBytes(data);
+        // break;
+        final outputStream = OutputFileStream('out/${item.name}');
+        item.writeContent(outputStream);
+        outputStream.close();
+        result = PlistParser().parseFileSync('out/${item.name}');
+        File file = File('out');
+        file.delete(recursive: true);
         break;
       }
     }
