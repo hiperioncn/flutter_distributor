@@ -1,3 +1,58 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+
+## 0.4.4
+
+* feat: macOS builder support flavor arg. #133
+* fix: Fixed android builder not supporting flavor as upper case. (#197)
+
+## 0.4.2
+
+* some fixes
+
+## 0.3.7
+
+* fix: Unhandled exception Null check operator used on a null value #159
+
+## 0.3.6
+
+* bump `shell_executor` to 0.1.5
+* fix: windows build failing due to invalid path in Flutter v3.15.0+ #149
+
+## 0.3.4
+
+* bump `shell_executor` to 0.1.4
+
+## 0.3.3
+
+* [apk-builer] fix apk not found 
+
+## 0.3.2
+
+* Update dart sdk version to ">=2.16.0 <4.0.0"
+
+## 0.3.1
+
+* Bump `shell_executor` to 0.1.2.
+
+## 0.3.0
+
+* Update a dependency to the latest release.
+
+## 0.2.8
+
+* fix iOS builder adds export build argument check error
+
+## 0.2.7
+
+* iOS builder adds export build argument check
+
+## 0.2.5
+
+* Use `shell_executor` to execute commands
+* Support linux arm64
+
 ## 0.2.3
 
 * Downgrade pubspec_parse to 1.1.0

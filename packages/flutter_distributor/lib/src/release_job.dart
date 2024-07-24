@@ -1,9 +1,4 @@
 class ReleaseJobPackage {
-  final String platform;
-  final String target;
-  final String? channel;
-  final Map<String, dynamic>? buildArgs;
-
   ReleaseJobPackage({
     required this.platform,
     required this.target,
@@ -20,6 +15,11 @@ class ReleaseJobPackage {
     );
   }
 
+  final String platform;
+  final String target;
+  final String? channel;
+  final Map<String, dynamic>? buildArgs;
+
   Map<String, dynamic> toJson() {
     return {
       'platform': platform,
@@ -31,9 +31,6 @@ class ReleaseJobPackage {
 }
 
 class ReleaseJobPublish {
-  final String target;
-  final Map<String, dynamic>? args;
-
   ReleaseJobPublish({
     required this.target,
     this.args,
@@ -45,6 +42,8 @@ class ReleaseJobPublish {
       args: json['args'],
     );
   }
+  final String target;
+  final Map<String, dynamic>? args;
 
   Map<String, dynamic> toJson() {
     return {
@@ -55,12 +54,8 @@ class ReleaseJobPublish {
 }
 
 class ReleaseJob {
-  final String name;
-  final ReleaseJobPackage package;
-  final ReleaseJobPublish? publish;
-  final String? publishTo;
-
   ReleaseJob({
+    this.variables,
     required this.name,
     required this.package,
     this.publish,
@@ -68,7 +63,12 @@ class ReleaseJob {
   });
 
   factory ReleaseJob.fromJson(Map<String, dynamic> json) {
+    Map<String, String> variables = {};
+    if (json.containsKey('variables') && json['variables'] != null) {
+      variables = Map<String, String>.from(json['variables']);
+    }
     return ReleaseJob(
+      variables: variables,
       name: json['name'],
       package: ReleaseJobPackage.fromJson(json['package']),
       publish: json['publish'] != null
@@ -78,8 +78,15 @@ class ReleaseJob {
     );
   }
 
+  final Map<String, String>? variables;
+  final String name;
+  final ReleaseJobPackage package;
+  final ReleaseJobPublish? publish;
+  final String? publishTo;
+
   Map<String, dynamic> toJson() {
     return {
+      'variables': variables,
       'name': name,
       'package': package.toJson(),
       'publish': publish?.toJson(),

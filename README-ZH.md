@@ -1,16 +1,15 @@
 # flutter_distributor
 
-[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos) [![All Contributors][all-contributors-image]](#contributors)
 
 [pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg?style=flat-square
 [pub-url]: https://pub.dev/packages/flutter_distributor
-
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg?style=flat-square
 [discord-url]: https://discord.gg/zPa6EZ2jqb
-
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.flutter_distributor/visits
+[all-contributors-image]: https://img.shields.io/github/all-contributors/leanflutter/flutter_distributor?color=ee8449&style=flat-square
 
-一个完整的工具，用于打包和发布您的 [Flutter](https://flutter.dev) 应用。
+一款全能的 [Flutter](https://flutter.dev) 应用打包和发布工具，为您提供一站式解决方案，满足各种分发需求。
 
 ---
 
@@ -20,27 +19,36 @@
 
 ## 文档
 
-完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.org/zh) 上找到。
+完整的文档可以在 [distributor.leanflutter.dev](https://distributor.leanflutter.dev/zh-hans) 上找到。
 
-## 项目功能
+## 功能
 
-这些是本代码仓库中可用的包。
+### 制作器
 
-- [app_package_maker_apk](./packages/app_package_maker_apk/) - 为你的应用创建一个 `apk` 包。
-- [app_package_maker_aab](./packages/app_package_maker_aab/) - 为你的应用创建一个 `aab` 包。
-- [app_package_maker_deb](./packages/app_package_maker_deb/) - 为你的应用创建一个 `deb` 包。
-- [app_package_maker_dmg](./packages/app_package_maker_dmg/) - 为你的应用创建一个 `dmg` 包。
-- [app_package_maker_exe](./packages/app_package_maker_exe/) - 为你的应用创建一个 `exe` 包。
-- [app_package_maker_ipa](./packages/app_package_maker_ipa/) - 为你的应用创建一个 `ipa` 包。
-- [app_package_maker_zip](./packages/app_package_maker_zip/) - 为你的应用创建一个 `zip` 包。
-- [app_package_maker_msix](./packages/app_package_maker_msix/) - 为你的应用创建一个 `msix` 包。
-- [app_package_publisher_appcenter](./packages/app_package_publisher_appcenter/) - 把你的应用发布到 `appcenter`.
-- [app_package_publisher_appstore](./packages/app_package_publisher_appstore/) - 把你的应用发布到 `appstore`.
-- [app_package_publisher_fir](./packages/app_package_publisher_fir/) - 把你的应用发布到 `fir`。
-- [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - 把你的应用发布到 `firebase`。
-- [app_package_publisher_github](./packages/app_package_publisher_github/) - 把你的应用发布到 `github` release。
-- [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - 把你的应用发布到 `pgyer`。
-- [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - 把你的应用发布到 `qiniu`。
+- [apk](./packages/flutter_app_packager/lib/src/makers/apk/) - 为你的应用创建一个 `apk` 包。
+- [aab](./packages/flutter_app_packager/lib/src/makers/aab/) - 为你的应用创建一个 `aab` 包。
+- [appimage](./packages/flutter_app_packager/lib/src/makers/appimage/) - 为你的应用创建一个 `AppImage` 包。
+- [deb](./packages/flutter_app_packager/lib/src/makers/deb/) - 为你的应用创建一个 `deb` 包。
+- [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - 为你的应用创建一个 `dmg` 包。
+- [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - 为你的应用创建一个 `exe` 包。
+- [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - 为你的应用创建一个 `ipa` 包。
+- [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - 为你的应用创建一个 `msix` 包。
+- [pkg](./packages/flutter_app_packager/lib/src/makers/pkg/) - 为你的应用创建一个 `pkg` 包。
+- [rpm](./packages/flutter_app_packager/lib/src/makers/rpm/) - 为你的应用创建一个 `rpm` 包。
+- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - 为你的应用创建一个 `zip` 包。
+
+### 发布器
+
+- [appcenter](./packages/flutter_app_publisher/lib/src/publishers/appcenter/) - 把你的应用发布到 `appcenter`.
+- [appstore](./packages/flutter_app_publisher/lib/src/publishers/appstore/) - 把你的应用发布到 `appstore`.
+- [fir](./packages/flutter_app_publisher/lib/src/publishers/fir/) - 把你的应用发布到 `fir`。
+- [firebase](./packages/flutter_app_publisher/lib/src/publishers/firebase/) - 把你的应用发布到 `firebase`。
+- [firebase_hosting](./packages/flutter_app_publisher/lib/src/publishers/firebase_hosting/) - 把你的应用发布到 `firebase_hosting`。
+- [github](./packages/flutter_app_publisher/lib/src/publishers/github/) - 把你的应用发布到 `github` release。
+- [pgyer](./packages/flutter_app_publisher/lib/src/publishers/pgyer/) - 把你的应用发布到 `pgyer`。
+- [playstore](./packages/flutter_app_publisher/lib/src/publishers/playstore/) - Publish your app to `playstore`.
+- [qiniu](./packages/flutter_app_publisher/lib/src/publishers/qiniu/) - 把你的应用发布到 `qiniu`。
+- [vercel](./packages/flutter_app_publisher/lib/src/publishers/vercel/) - 把你的应用发布到 `vercel`。
 
 ## 立即开始
 
@@ -55,8 +63,8 @@ dart pub global activate flutter_distributor
 将 `distribute_options.yaml` 添加到你的项目根目录。
 
 ```yaml
-env:
-  PGYER_API_KEY: 'your api key'
+variables:
+  PGYER_API_KEY: "your api key"
 output: dist/
 releases:
   - name: dev
@@ -96,6 +104,52 @@ flutter_distributor release --name dev
 - [比译](https://biyidev.com/) - 一个便捷的翻译和词典应用。
 - [钱迹](https://qianjiapp.com/) - 一款纯粹记账的应用。
 - [Alga](https://github.com/laiiihz/alga/) - 一个开发者工具应用。
+- [Airclap](https://airclap.app/) - 任何文件，任意设备，随意发送。简单好用的跨平台高速文件传输APP。
+
+## 贡献者
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/lijy91"><img src="https://avatars.githubusercontent.com/u/3889523?v=4?s=100" width="100px;" alt="LiJianying"/><br /><sub><b>LiJianying</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=lijy91" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://juejin.cn/user/764915820276439"><img src="https://avatars.githubusercontent.com/u/8764899?v=4?s=100" width="100px;" alt="Zero"/><br /><sub><b>Zero</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=BytesZero" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/KRTirtho"><img src="https://avatars.githubusercontent.com/u/61944859?v=4?s=100" width="100px;" alt="Kingkor Roy Tirtho"/><br /><sub><b>Kingkor Roy Tirtho</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=KRTirtho" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/laiiihz"><img src="https://avatars.githubusercontent.com/u/35956195?v=4?s=100" width="100px;" alt="LAIIIHZ"/><br /><sub><b>LAIIIHZ</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=laiiihz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ueki-tomohiro"><img src="https://avatars.githubusercontent.com/u/27331430?v=4?s=100" width="100px;" alt="Tomohiro Ueki"/><br /><sub><b>Tomohiro Ueki</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=ueki-tomohiro" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cybrox.eu/"><img src="https://avatars.githubusercontent.com/u/2383736?v=4?s=100" width="100px;" alt="Sven Gehring"/><br /><sub><b>Sven Gehring</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=cybrox" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GargantuaX"><img src="https://avatars.githubusercontent.com/u/14013111?v=4?s=100" width="100px;" alt="GargantuaX"/><br /><sub><b>GargantuaX</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=GargantuaX" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hiperioncn"><img src="https://avatars.githubusercontent.com/u/6045710?v=4?s=100" width="100px;" alt="Hiperion"/><br /><sub><b>Hiperion</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=hiperioncn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GroovinChip"><img src="https://avatars.githubusercontent.com/u/4250470?v=4?s=100" width="100px;" alt="Reuben Turner"/><br /><sub><b>Reuben Turner</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=GroovinChip" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://animator.github.io"><img src="https://avatars.githubusercontent.com/u/615622?v=4?s=100" width="100px;" alt="Ankit Mahato"/><br /><sub><b>Ankit Mahato</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=animator" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://tienisto.com"><img src="https://avatars.githubusercontent.com/u/38380847?v=4?s=100" width="100px;" alt="Tien Do Nam"/><br /><sub><b>Tien Do Nam</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=Tienisto" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://zacksleo.top/"><img src="https://avatars.githubusercontent.com/u/3369169?v=4?s=100" width="100px;" alt="zacks"/><br /><sub><b>zacks</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=zacksleo" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/M97Chahboun"><img src="https://avatars.githubusercontent.com/u/69054810?v=4?s=100" width="100px;" alt="Mohammed  CHAHBOUN"/><br /><sub><b>Mohammed  CHAHBOUN</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=M97Chahboun" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/prateekmedia"><img src="https://avatars.githubusercontent.com/u/41370460?v=4?s=100" width="100px;" alt="Prateek Sunal"/><br /><sub><b>Prateek Sunal</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=prateekmedia" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LailaiMaster"><img src="https://avatars.githubusercontent.com/u/19606597?v=4?s=100" width="100px;" alt="lllgm"/><br /><sub><b>lllgm</b></sub></a><br /><a href="https://github.com/leanflutter/flutter_distributor/commits?author=LailaiMaster" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td align="center" size="13px" colspan="7">
+        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
+          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
+        </img>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## 许可证
 

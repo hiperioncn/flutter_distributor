@@ -1,15 +1,8 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
-import 'package:app_package_maker_aab/app_package_maker_aab.dart';
-import 'package:app_package_maker_apk/app_package_maker_apk.dart';
-import 'package:app_package_maker_deb/app_package_maker_deb.dart';
-import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
-import 'package:app_package_maker_exe/app_package_maker_exe.dart';
-import 'package:app_package_maker_ipa/app_package_maker_ipa.dart';
-// import 'package:app_package_maker_msix/app_package_maker_msix.dart';
-import 'package:app_package_maker_zip/app_package_maker_zip.dart';
-import 'package:app_package_maker_appimage/app_package_maker_appimage.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
+import 'package:flutter_app_packager/src/makers/makers.dart';
+import 'package:flutter_app_packager/src/makers/pacman/app_package_maker_pacman.dart';
 
 class FlutterAppPackager {
   final List<AppPackageMaker> _makers = [
@@ -17,10 +10,16 @@ class FlutterAppPackager {
     AppPackageMakerApk(),
     AppPackageMakerAppImage(),
     AppPackageMakerDeb(),
+    AppPackageMakerDirect('linux'),
+    AppPackageMakerDirect('windows'),
+    AppPackageMakerDirect('web'),
     AppPackageMakerDmg(),
     AppPackageMakerExe(),
     AppPackageMakerIpa(),
-    // AppPackageMakerMsix(),
+    AppPackageMakerMsix(),
+    AppPackageMakerPkg(),
+    AppPackageMakerRPM(),
+    AppPackageMakerPacman(),
     AppPackageMakerZip('linux'),
     AppPackageMakerZip('macos'),
     AppPackageMakerZip('windows'),
@@ -28,23 +27,20 @@ class FlutterAppPackager {
   ];
 
   Future<MakeResult> package(
-    Directory appDirectory, {
-    required Directory outputDirectory,
-    required String platform,
-    required String target,
-    Map<String, dynamic>? makeArguments,
-    void Function(List<int> data)? onProcessStdOut,
-    void Function(List<int> data)? onProcessStdErr,
-  }) async {
-    AppPackageMaker maker = _makers.firstWhere(
-      (e) => e.platform == platform && e.name == target,
+    String platform,
+    String target,
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final maker = _makers.firstWhere((e) => e.match(platform, target));
+    final config = maker.configLoader.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
     );
-    return await maker.make(
-      appDirectory,
-      outputDirectory: outputDirectory,
-      makeArguments: makeArguments,
-      onProcessStdOut: onProcessStdOut,
-      onProcessStdErr: onProcessStdErr,
-    );
+    return maker.make(config);
   }
 }

@@ -1,3 +1,121 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+* fix: don't block rpm build if metainfo not found (#202)
+* chore: Support third-party pub mirror sources #201
+* [FEAT] Add support for Pacman (Arch Linux) (#198)
+
+## 0.4.4
+
+* fix: Fixed android builder not supporting flavor as upper case. (#197)
+* feat: macOS builder support flavor arg. (#196)
+* [Linux] Add MimeType for appimage and metainfo file support (#195)
+* Support set track for playstore deployment (#185)
+
+## 0.4.3
+
+* Fix the issue of garbled text in parseAppPackage on macOS.
+
+## 0.4.2
+
+* some fixes
+
+## 0.4.1
+
+* [playstore] - Replace `GOOGLE_APPLICATION_CREDENTIALS` to `PLAYSTORE_CREDENTIALS`
+
+## 0.4.0
+
+* fix failure to parse `Property List Binary` format
+
+## 0.3.9
+
+* fix: Can't decode gbk encoding issue #131
+
+## 0.3.8
+
+* bump `archive` to 3.4.10
+
+## 0.3.7
+
+* fix: Unhandled exception Null check operator used on a null value #159
+* Use correct architecture when making deb #150
+
+## 0.3.6
+
+* bump `shell_executor` to 0.1.5
+* bump `msix` to 3.16.6
+* bump `dio` to 5.3.4
+* bump `googleapis` to 9.1.0
+* fix: windows build failing due to invalid path in Flutter v3.15.0+ #149
+
+## 0.3.5
+
+* [deb-maker] Supports custom binary name
+
+## 0.3.4
+
+* bump `shell_executor` to 0.1.4
+* Supports custom `FLUTTER_ROOT` environment variable.
+* Support defining environment variables in releases and jobs.
+
+## 0.3.3
+
+* [apk-builer] fix apk not found 
+
+## 0.3.2
+
+* Update dart sdk version to ">=2.16.0 <4.0.0"
+* feat: compress macOS app with 7zip
+* [dmg-maker] Rename `backgroundColor` to `background-color` in `MakeDmgConfig`
+* [dmg-maker] fix: fix make_dmg_config lost <window> specification (#120)
+* [deb-maker] Fixes #117 install and uninstall errors (#121)
+* fix(docs): fix exe make_config.yaml example error
+* chore: Optimize msix maker
+
+## 0.3.1
+
+* Add `direct` maker
+* [rpm] fix lib/*.so rpath before packaging (#110)
+* feat:fix appdmg “icon-size” Specification。 (#113)
+* Add `firebase-hosting` publisher.
+* Add `vercel` publisher.
+* Modify the `publish` method to accept `FileSystemEntity` instead of just `File`
+* Add the `workingDirectory` parameter to the `DefaultShellExecutor` and related classes.
+* Bump `shell_executor` to 0.1.2.
+
+## 0.3.0
+
+* bump flutter to 3.7
+* [exe] add template support for all innosetup 6.x default languages (#102)
+* Improve command usability (help texts, null checks, misc) (#106)
+* apk & app maker support profile mode.
+* flutter_distributor command add version-check flag
+* [AppImage] Use appimagetool to bundle AppImage (#109)
+* Refactor flutter_distributor
+
+## 0.2.8
+
+* fix iOS builder adds export build argument check error
+
+## 0.2.7
+
+* Feat: Linux RPM packaging support (#101)
+* iOS builder adds export build argument check
+
+## 0.2.6
+
+* [maker-zip] remove packagingDirectory after make
+
+## 0.2.5
+
+* Use `shell_executor` to execute commands
+* Fix an incorrectly worded message
+* Optimize output messages in console
+* Support linux arm64
+* [maker-zip] without using the 7zip command
+* [publisher-pgyer] Upgrade to v2 Api #91 #92
+
 ## 0.2.4
 
 * [dmg maker] Support `code-sign` configuration item.

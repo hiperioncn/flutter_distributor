@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
-import 'package:app_package_publisher/app_package_publisher.dart';
-import 'package:colorize/colorize.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
+import 'package:flutter_distributor/src/distribute_options.dart';
+import 'package:flutter_distributor/src/extensions/extensions.dart';
+import 'package:flutter_distributor/src/release.dart';
+import 'package:flutter_distributor/src/release_job.dart';
+import 'package:flutter_distributor/src/utils/utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:shell_executor/shell_executor.dart';
+import 'package:shell_uikit/shell_uikit.dart';
 import 'package:yaml/yaml.dart';
 
-import 'distribute_options.dart';
-import 'release.dart';
-import 'release_job.dart';
-import 'utils/logger.dart';
-import 'utils/progress_bar.dart';
-import 'utils/pub_dev_api.dart';
-
 class FlutterDistributor {
+  FlutterDistributor() {
+    ShellExecutor.global = DefaultShellExecutor();
+  }
+
   final FlutterAppBuilder _builder = FlutterAppBuilder();
   final FlutterAppPackager _packager = FlutterAppPackager();
   final FlutterAppPublisher _publisher = FlutterAppPublisher();
@@ -32,25 +33,24 @@ class FlutterDistributor {
     return _pubspec!;
   }
 
-  Map<String, String> _environment = {};
-  Map<String, String> get environment {
-    if (_environment.keys.isEmpty) {
+  final Map<String, String> _globalVariables = {};
+  Map<String, String> get globalVariables {
+    if (_globalVariables.keys.isEmpty) {
       for (String key in Platform.environment.keys) {
         String? value = Platform.environment[key];
         if ((value ?? '').isNotEmpty) {
-          _environment[key] = value!;
+          _globalVariables[key] = value!;
         }
       }
-      List<String> keys = distributeOptions.env?.keys.toList() ?? [];
+      List<String> keys = distributeOptions.variables?.keys.toList() ?? [];
       for (String key in keys) {
-        String? value = distributeOptions.env?[key];
-
+        String? value = distributeOptions.variables?[key];
         if ((value ?? '').isNotEmpty) {
-          _environment[key] = value!;
+          _globalVariables[key] = value!;
         }
       }
     }
-    return _environment;
+    return _globalVariables;
   }
 
   DistributeOptions? _distributeOptions;
@@ -104,15 +104,15 @@ class FlutterDistributor {
     if (currentVersion != null &&
         latestVersion != null &&
         currentVersion.compareTo(latestVersion) < 0) {
-      Colorize msg = Colorize([
+      String msg = [
         '╔════════════════════════════════════════════════════════════════════════════╗',
         '║ A new version of Flutter Distributor is available!                         ║',
         '║                                                                            ║',
         '║ To update to the latest version, run "flutter_distributor upgrade".        ║',
         '╚════════════════════════════════════════════════════════════════════════════╝',
         '',
-      ].join('\n'));
-      print(msg.yellow());
+      ].join('\n');
+      print(msg);
     }
     return Future.value();
   }
@@ -128,6 +128,7 @@ class FlutterDistributor {
     String? artifactName,
     required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
+    Map<String, String>? variables,
   }) async {
     List<MakeResult> makeResultList = [];
 
@@ -137,75 +138,81 @@ class FlutterDistributor {
         outputDirectory.createSync(recursive: true);
       }
 
+      if (cleanBeforeBuild) {
+        await _builder.clean();
+      }
+
       bool isBuildOnlyOnce = platform != 'android';
       BuildResult? buildResult;
 
       for (String target in targets) {
         logger.info('Packaging ${pubspec.name} ${pubspec.version} as $target:');
         if (!isBuildOnlyOnce || (isBuildOnlyOnce && buildResult == null)) {
-          logger.info('Building...');
-          buildResult = await _builder.build(
-            platform,
-            target,
-            cleanBeforeBuild: cleanBeforeBuild,
-            buildArguments: buildArguments,
-            onProcessStdOut: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
-            onProcessStdErr: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
-          );
-          logger.info(
-            Colorize('Successfully builded ${buildResult.outputDirectory}')
-                .green(),
-          );
+          try {
+            buildResult = await _builder.build(
+              platform,
+              target: target,
+              arguments: buildArguments,
+              environment: variables ?? globalVariables,
+            );
+            print(
+              const JsonEncoder.withIndent('  ').convert(buildResult.toJson()),
+            );
+            logger.info(
+              'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration!.inSeconds}s'
+                  .brightGreen(),
+            );
+          } on UnsupportedError catch (error) {
+            logger.warning('Warning: ${error.message}'.yellow());
+            continue;
+          } catch (error) {
+            rethrow;
+          }
         }
 
         if (buildResult != null) {
-          Map<String, dynamic>? makeArguments = {
+          String buildMode =
+              buildArguments.containsKey('profile') ? 'profile' : 'release';
+          Map<String, dynamic>? arguments = {
+            'build_mode': buildMode,
             'flavor': buildArguments['flavor'],
             'channel': channel,
             'artifact_name': artifactName,
           };
           MakeResult makeResult = await _packager.package(
-            buildResult.outputDirectory,
-            outputDirectory: outputDirectory,
-            platform: platform,
-            target: target,
-            makeArguments: makeArguments,
-            onProcessStdOut: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
-            onProcessStdErr: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
+            platform,
+            target,
+            arguments,
+            outputDirectory,
+            buildOutputDirectory: buildResult.outputDirectory,
+            buildOutputFiles: buildResult.outputFiles,
           );
-
+          print(
+            const JsonEncoder.withIndent('  ').convert(makeResult.toJson()),
+          );
+          FileSystemEntity artifact = makeResult.artifacts.first;
           logger.info(
-            Colorize('Successfully packaged ${makeResult.outputFile.path}')
-                .green(),
+            'Successfully packaged ${artifact.path}'.brightGreen(),
           );
-
           makeResultList.add(makeResult);
         }
       }
-    } on Error catch (error) {
-      logger.shout(Colorize(error.toString()).red());
-      logger.shout(Colorize(error.stackTrace.toString()).red());
+    } catch (error) {
+      logger.severe(error.toString().red());
+      if (error is Error) {
+        logger.severe(error.stackTrace.toString().red());
+      }
+      rethrow;
     }
 
     return makeResultList;
   }
 
   Future<List<PublishResult>> publish(
-    File file,
+    FileSystemEntity fileSystemEntity,
     List<String> targets, {
     Map<String, dynamic>? publishArguments,
+    Map<String, String>? variables,
   }) async {
     List<PublishResult> publishResultList = [];
     try {
@@ -222,6 +229,7 @@ class FlutterDistributor {
             dynamic value = publishArguments[key];
 
             if (value is List) {
+              // ignore: prefer_for_elements_to_map_fromiterable
               value = Map.fromIterable(
                 value,
                 key: (e) => e.split('=')[0],
@@ -241,9 +249,9 @@ class FlutterDistributor {
         }
 
         PublishResult publishResult = await _publisher.publish(
-          file,
+          fileSystemEntity,
           target: target,
-          environment: this.environment,
+          environment: variables ?? globalVariables,
           publishArguments: newPublishArguments,
           onPublishProgress: (sent, total) {
             if (!progressBar.isActive) {
@@ -255,14 +263,13 @@ class FlutterDistributor {
         );
         if (progressBar.isActive) progressBar.stop();
         logger.info(
-          Colorize('Successfully published ${publishResult.url}').green(),
+          'Successfully published ${publishResult.url}'.brightGreen(),
         );
-
         publishResultList.add(publishResult);
       }
     } on Error catch (error) {
-      logger.shout(Colorize(error.toString()).red());
-      logger.shout(Colorize(error.stackTrace.toString()).red());
+      logger.severe(error.toString().brightRed());
+      logger.severe(error.stackTrace.toString().brightRed());
     }
     return publishResultList;
   }
@@ -273,78 +280,102 @@ class FlutterDistributor {
     required List<String> skipJobNameList,
     required bool cleanBeforeBuild,
   }) async {
-    Directory outputDirectory = distributeOptions.outputDirectory;
-    if (!outputDirectory.existsSync()) {
-      outputDirectory.createSync(recursive: true);
-    }
+    final time = Stopwatch()..start();
 
-    List<Release> releases = [];
-
-    if (name.isNotEmpty) {
-      releases =
-          distributeOptions.releases.where((e) => e.name == name).toList();
-    }
-
-    if (releases.isEmpty) {
-      throw Exception('Missing/incomplete `distribute_options.yaml` file.');
-    }
-
-    for (Release release in releases) {
-      List<ReleaseJob> filteredJobs = release.jobs.where((e) {
-        if (jobNameList.isNotEmpty) {
-          return jobNameList.contains(e.name);
-        }
-        if (skipJobNameList.isNotEmpty) {
-          return !skipJobNameList.contains(e.name);
-        }
-        return true;
-      }).toList();
-      if (filteredJobs.isEmpty) {
-        throw Exception('No available jobs found in ${release.name}.');
+    try {
+      Directory outputDirectory = distributeOptions.outputDirectory;
+      if (!outputDirectory.existsSync()) {
+        outputDirectory.createSync(recursive: true);
       }
 
-      bool needCleanBeforeBuild = cleanBeforeBuild;
+      List<Release> releases = [];
 
-      for (ReleaseJob job in filteredJobs) {
-        List<MakeResult> makeResultList = await package(
-          job.package.platform,
-          [job.package.target],
-          channel: job.package.channel,
-          artifactName: distributeOptions.artifactName,
-          cleanBeforeBuild: needCleanBeforeBuild,
-          buildArguments: job.package.buildArgs ?? {},
-        );
-        // Clean only once
-        needCleanBeforeBuild = false;
+      if (name.isNotEmpty) {
+        releases =
+            distributeOptions.releases.where((e) => e.name == name).toList();
+      }
 
-        if (job.publish != null || job.publishTo != null) {
-          String? publishTarget = job.publishTo ?? job.publish?.target;
-          MakeResult makeResult = makeResultList.first;
-          await publish(
-            makeResult.outputFile,
-            [publishTarget!],
-            publishArguments: job.publish?.args,
+      if (releases.isEmpty) {
+        throw Exception('Missing/incomplete `distribute_options.yaml` file.');
+      }
+
+      for (Release release in releases) {
+        List<ReleaseJob> filteredJobs = release.jobs.where((e) {
+          if (jobNameList.isNotEmpty) {
+            return jobNameList.contains(e.name);
+          }
+          if (skipJobNameList.isNotEmpty) {
+            return !skipJobNameList.contains(e.name);
+          }
+          return true;
+        }).toList();
+        if (filteredJobs.isEmpty) {
+          throw Exception('No available jobs found in ${release.name}.');
+        }
+
+        bool needCleanBeforeBuild = cleanBeforeBuild;
+
+        for (ReleaseJob job in filteredJobs) {
+          logger.info('');
+          logger.info(
+            '${'===>'.blue()} ${'Releasing'.white(bold: true)} $name:${job.name.green(bold: true)}',
           );
+
+          Map<String, String> variables = {}
+            ..addAll(globalVariables)
+            ..addAll(release.variables ?? {})
+            ..addAll(job.variables ?? {});
+
+          List<MakeResult> makeResultList = await package(
+            job.package.platform,
+            [job.package.target],
+            channel: job.package.channel,
+            artifactName: distributeOptions.artifactName,
+            cleanBeforeBuild: needCleanBeforeBuild,
+            buildArguments: job.package.buildArgs ?? {},
+            variables: variables,
+          );
+          // Clean only once
+          needCleanBeforeBuild = false;
+
+          if (job.publish != null || job.publishTo != null) {
+            String? publishTarget = job.publishTo ?? job.publish?.target;
+            MakeResult makeResult = makeResultList.first;
+            FileSystemEntity artifact = makeResult.artifacts.first;
+            await publish(
+              artifact,
+              [publishTarget!],
+              publishArguments: job.publish?.args,
+              variables: variables,
+            );
+          }
         }
       }
+
+      time.stop();
+      logger.info('');
+      logger.info(
+        'RELEASE SUCCESSFUL in ${time.elapsed.inSeconds}s'.green(bold: true),
+      );
+    } catch (error, stacktrace) {
+      time.stop();
+      logger.info('');
+      logger.severe(
+        [
+          'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
+          error.toString().red(),
+          stacktrace,
+        ].join('\n'),
+      );
     }
     return Future.value();
   }
 
   Future<void> upgrade() async {
-    Process process = await Process.start(
+    await $(
       'dart',
       ['pub', 'global', 'activate', 'flutter_distributor'],
     );
-    process.stdout.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      logger.info(msg);
-    });
-    process.stderr.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      logger.shout(msg);
-    });
-
     return Future.value();
   }
 }

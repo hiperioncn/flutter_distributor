@@ -3,3 +3,6 @@
 # IntelliJ related
 *.iml
 .idea/
+
+pubspec_overrides.yaml
+pubspec.lock
